@@ -1,5 +1,5 @@
 
-name: 'Create release notes'
+name: 'Create jira release notes'
 description: 'A github action to create release notes'
 author: 'randomizer<randil.fernando@outlook.com>'
 runs:

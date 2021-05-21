@@ -1,5 +1,5 @@
 {
-  "name": "attach-jira-tickets",
+  "name": "create-jira-release-notes",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
