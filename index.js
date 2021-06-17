@@ -8,8 +8,13 @@ function generateReleaseNotes(branchDiffFile, projectKey, createReleaseUrl) {
 
   const re = new RegExp(`${projectKey}-([0-9]*)`);
   const tickets = {};
+  let isFeatureChange = false;
 
   for (const line of lines) {
+    if (line.includes('[FEATURE]')) {
+      isFeatureChange = true;
+    }
+
     const words = line.trim().split(" ");
 
     for (const word of words) {
@@ -24,8 +29,14 @@ function generateReleaseNotes(branchDiffFile, projectKey, createReleaseUrl) {
   const ticketIds = Object.keys(tickets);
   console.log("Detected tickets: " + JSON.stringify(ticketIds));
 
-  let releaseNotes = "## Changes\n";
+  let releaseNotes = "## Change type\n";
+  if (isFeatureChange) {
+    releaseNotes += "**Minor** change\n"
+  } else{
+    releaseNotes += "**Patch** change\n"
+  }
 
+  releaseNotes += "## Changes\n";
   for (const ticketId of ticketIds) {
     releaseNotes += `- ${ticketId}\n`;
   }
