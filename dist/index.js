@@ -461,12 +461,18 @@ var __webpack_exports__ = {};
 const fs = __nccwpck_require__(747)
 const core = __nccwpck_require__(398);
 
-function generateReleaseNotes(branchDiffFile, projectKey, createReleaseUrl) {
+function generateReleaseNotes(branchDiffFile, projectKeys, createReleaseUrl) {
   const data = fs.readFileSync(branchDiffFile, 'utf8');
   const lines = data.split(/\r?\n/);
+
+  console.log("Project keys: " + projectKeys);
   console.log("Lines: " + lines.length);
 
-  const re = new RegExp(`${projectKey}-([0-9]*)`);
+  const regExps = [];
+  for (const projectKey of projectKeys) {
+    regExps.push(new RegExp(`${projectKey}-([0-9]*)`))
+  }
+
   const tickets = {};
   let isFeatureChange = false;
 
@@ -478,10 +484,12 @@ function generateReleaseNotes(branchDiffFile, projectKey, createReleaseUrl) {
     const words = line.trim().split(" ");
 
     for (const word of words) {
-      const r = word.trim().match(re);
+      for (const re of regExps) {
+        const r = word.trim().match(re);
 
-      if (r) {
-        tickets[r[0]] = true;
+        if (r) {
+          tickets[r[0]] = true;
+        }
       }
     }
   }
@@ -521,7 +529,7 @@ async function run() {
     const projectKey = core.getInput('jira-project-key', {required: true});
     const createReleaseUrl = core.getInput('jira-url', {required: false});
 
-    const releaseNotes = generateReleaseNotes(branchDiffFile, projectKey, createReleaseUrl);
+    const releaseNotes = generateReleaseNotes(branchDiffFile, projectKey.split(","), createReleaseUrl);
     core.setOutput('release-notes', releaseNotes);
   } catch (error) {
     core.error(error);
