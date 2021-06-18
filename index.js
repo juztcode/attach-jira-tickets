@@ -10,7 +10,7 @@ function generateReleaseNotes(branchDiffFile, projectKeys, createReleaseUrl) {
 
   const regExps = [];
   for (const projectKey of projectKeys) {
-    regExps.push(new RegExp(`${projectKey}-([0-9]*)`))
+    regExps.push(new RegExp(`${projectKey.trim()}-([0-9]*)`))
   }
 
   const tickets = {};
@@ -34,13 +34,23 @@ function generateReleaseNotes(branchDiffFile, projectKeys, createReleaseUrl) {
     }
   }
 
-  const ticketIds = Object.keys(tickets);
+  const ticketIds = Object.keys(tickets)
+    .sort((a, b) => {
+      const partsA = a.split("-");
+      const partsB = b.split("-");
+
+      if (partsA[0] === partsB[0]) {
+        return +partsA[1] - +partsB[1];
+      } else {
+        return partsA[0].localeCompare(partsB[0])
+      }
+    });
   console.log("Detected tickets: " + JSON.stringify(ticketIds));
 
   let releaseNotes = "## Change type\n";
   if (isFeatureChange) {
     releaseNotes += "**Minor** change\n"
-  } else{
+  } else {
     releaseNotes += "**Patch** change\n"
   }
 
