@@ -461,10 +461,12 @@ var __webpack_exports__ = {};
 const fs = __nccwpck_require__(747)
 const core = __nccwpck_require__(398);
 
-function generateReleaseNotes(branchDiffFile, projectKeys, createReleaseUrl) {
+function generateReleaseNotes(branchDiffFile, projectKeys, previousVersion, newVersion, createReleaseUrl) {
   const data = fs.readFileSync(branchDiffFile, 'utf8');
   const lines = data.split(/\r?\n/);
 
+  console.log("Previous version: " + previousVersion);
+  console.log("New version: " + newVersion);
   console.log("Project keys: " + projectKeys);
   console.log("Lines: " + lines.length);
 
@@ -474,13 +476,8 @@ function generateReleaseNotes(branchDiffFile, projectKeys, createReleaseUrl) {
   }
 
   const tickets = {};
-  let isFeatureChange = false;
 
   for (const line of lines) {
-    if (line.includes('[FEATURE]')) {
-      isFeatureChange = true;
-    }
-
     const words = line.trim().split(" ");
 
     for (const word of words) {
@@ -505,13 +502,15 @@ function generateReleaseNotes(branchDiffFile, projectKeys, createReleaseUrl) {
         return partsA[0].localeCompare(partsB[0])
       }
     });
+
   console.log("Detected tickets: " + JSON.stringify(ticketIds));
 
-  let releaseNotes = "## Change type\n";
-  if (isFeatureChange) {
-    releaseNotes += "**Minor** change\n"
-  } else {
-    releaseNotes += "**Patch** change\n"
+  let releaseNotes = "";
+
+  if (!!previousVersion) {
+    releaseNotes += "## Version change\n";
+    releaseNotes += `- Previous version: **${previousVersion}**\n`;
+    releaseNotes += `- New version: **${newVersion}**\n`;
   }
 
   releaseNotes += "## Changes\n";
@@ -537,9 +536,12 @@ async function run() {
   try {
     const branchDiffFile = core.getInput('branch-diff-file', {required: true});
     const projectKey = core.getInput('jira-project-key', {required: true});
+    const previousVersion = core.getInput("previous-version", {required: false});
+    const newVersion = core.getInput("new-version", {required: false});
     const createReleaseUrl = core.getInput('jira-url', {required: false});
 
-    const releaseNotes = generateReleaseNotes(branchDiffFile, projectKey.split(","), createReleaseUrl);
+    const releaseNotes = generateReleaseNotes(branchDiffFile, projectKey.split(","), previousVersion,
+      newVersion, createReleaseUrl);
     core.setOutput('release-notes', releaseNotes);
   } catch (error) {
     core.error(error);

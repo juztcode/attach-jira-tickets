@@ -49,6 +49,8 @@ Input             | Purpose
 ------------------|---------------------------------------------------------------------------------------------------------------------------------------
 branch-diff-file  | File contains commit message difference between head and base branches.
 jira-project-key  | Jira project key used to extract ticket ids from commit message (TEST key will detect all ticket ids with pattern TEST-<num>).
+previous-version  | Previous version released
+new-version       | New version to be released
 jira-url          | Jira url to use when generating create release ticket link.
 
 ## Outputs
