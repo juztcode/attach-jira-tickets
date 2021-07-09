@@ -10,6 +10,8 @@ function generateReleaseNotes(branchDiffFile, projectKeys, previousVersion, newV
   console.log("Project keys: " + projectKeys);
   console.log("Lines: " + lines.length);
 
+  const mergeRegExp = new RegExp('Merge branch .* into .*');
+
   const regExps = [];
   for (const projectKey of projectKeys) {
     regExps.push(new RegExp(`${projectKey.trim()}-([0-9]*)`))
@@ -18,14 +20,17 @@ function generateReleaseNotes(branchDiffFile, projectKeys, previousVersion, newV
   const tickets = {};
 
   for (const line of lines) {
-    const words = line.trim().split(" ");
+    const mergeCommit = line.trim().match(mergeRegExp);
+    if (!mergeCommit) {
+      const words = line.trim().split(" ");
 
-    for (const word of words) {
-      for (const re of regExps) {
-        const r = word.trim().match(re);
+      for (const word of words) {
+        for (const re of regExps) {
+          const r = word.trim().match(re);
 
-        if (r) {
-          tickets[r[0]] = true;
+          if (r) {
+            tickets[r[0]] = true;
+          }
         }
       }
     }
