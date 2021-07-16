@@ -471,10 +471,13 @@ function generateReleaseNotes(branchDiffFile, projectKeys, previousVersion, newV
   console.log("Lines: " + lines.length);
 
   const mergeRegExp = new RegExp('Merge branch .* into .*');
-
   const regExps = [];
   for (const projectKey of projectKeys) {
-    regExps.push(new RegExp(`${projectKey.trim()}-([0-9]*)`))
+    if (projectKey === '*') {
+      regExps.push(new RegExp('([A-Z].*)-([0-9].*)'));
+    } else {
+      regExps.push(new RegExp(`${projectKey.trim()}-([0-9].*)`));
+    }
   }
 
   const tickets = {};
