@@ -474,9 +474,9 @@ function generateReleaseNotes(branchDiffFile, projectKeys, previousVersion, newV
   const regExps = [];
   for (const projectKey of projectKeys) {
     if (projectKey === '*') {
-      regExps.push(new RegExp('([A-Z].*)-([0-9].*)'));
+      regExps.push(new RegExp('([A-Z]*)-([0-9]*)'));
     } else {
-      regExps.push(new RegExp(`${projectKey.trim()}-([0-9].*)`));
+      regExps.push(new RegExp(`${projectKey.trim()}-([0-9]*)`));
     }
   }
 
