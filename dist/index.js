@@ -461,7 +461,7 @@ var __webpack_exports__ = {};
 const fs = __nccwpck_require__(747)
 const core = __nccwpck_require__(398);
 
-function generateReleaseNotes(branchDiffFile, projectKeys, previousVersion, newVersion, createReleaseUrl) {
+function generateReleaseNotes(branchDiffFile, projectKeys, previousVersion, newVersion, viewReleaseUrl, createReleaseUrl) {
   const data = fs.readFileSync(branchDiffFile, 'utf8');
   const lines = data.split(/\r?\n/);
 
@@ -526,15 +526,22 @@ function generateReleaseNotes(branchDiffFile, projectKeys, previousVersion, newV
     releaseNotes += `- ${ticketId}\n`;
   }
 
-  if (!!createReleaseUrl) {
-    let createRelease = createReleaseUrl + "&issuelinks-linktype=releases&issuelinks-issues=DELETE";
+  if (!!viewReleaseUrl || !!createReleaseUrl) {
+    releaseNotes += `\n## Links\n`;
 
-    for (const ticketId of ticketIds) {
-      createRelease += `&issuelinks-issues=${ticketId}`
+    if (!!viewReleaseUrl) {
+      releaseNotes += `- [View Release Ticket](${encodeURI(viewReleaseUrl)})`;
     }
 
-    releaseNotes += `\n## Links\n`;
-    releaseNotes += `- [Create Release Ticket](${encodeURI(createRelease)})`;
+    if (!!createReleaseUrl) {
+      let createRelease = createReleaseUrl + "&issuelinks-linktype=releases&issuelinks-issues=DELETE";
+
+      for (const ticketId of ticketIds) {
+        createRelease += `&issuelinks-issues=${ticketId}`
+      }
+
+      releaseNotes += `- [Create Release Ticket](${encodeURI(createRelease)})`;
+    }
   }
 
   return releaseNotes;
@@ -546,10 +553,11 @@ async function run() {
     const projectKey = core.getInput('jira-project-key', {required: true});
     const previousVersion = core.getInput("previous-version", {required: false});
     const newVersion = core.getInput("new-version", {required: false});
-    const createReleaseUrl = core.getInput('jira-url', {required: false});
+    const viewReleaseUrl = core.getInput("jira-view-release", {required: false})
+    const createReleaseUrl = core.getInput('jira-create-release', {required: false});
 
     const releaseNotes = generateReleaseNotes(branchDiffFile, projectKey.split(","), previousVersion,
-      newVersion, createReleaseUrl);
+      newVersion, viewReleaseUrl, createReleaseUrl);
     core.setOutput('release-notes', releaseNotes);
   } catch (error) {
     core.error(error);
