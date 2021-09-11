@@ -70,7 +70,7 @@ function generateReleaseNotes(branchDiffFile, projectKeys, previousVersion, newV
     releaseNotes += `\n## Links\n`;
 
     if (!!viewReleaseUrl) {
-      releaseNotes += `- [View Release Ticket](${encodeURI(viewReleaseUrl)})`;
+      releaseNotes += `- [View Release Ticket](${encodeURI(viewReleaseUrl)})\n`;
     }
 
     if (!!createReleaseUrl) {
@@ -80,7 +80,7 @@ function generateReleaseNotes(branchDiffFile, projectKeys, previousVersion, newV
         createRelease += `&issuelinks-issues=${ticketId}`
       }
 
-      releaseNotes += `- [Create Release Ticket](${encodeURI(createRelease)})`;
+      releaseNotes += `- [Create Release Ticket](${encodeURI(createRelease)})\n`;
     }
   }
 
